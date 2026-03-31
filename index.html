@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>California Executive Clemency Dashboard (2019–2026)</title>
+  <meta name="description" content="Interactive analysis of California executive clemency data under Governor Newsom — trends, demographics, policy impacts, and case studies." />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Chart.js v4 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Chart.js annotation plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <!-- D3 v7 -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <!-- TopoJSON -->
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+</head>
+<body>
+
+<!-- ════════════════ HERO ════════════════ -->
+<header class="hero">
+  <div class="container">
+    <p class="hero-eyebrow">California Governor's Office · 2019 – 2026</p>
+    <h1>Executive <span>Clemency</span><br>in California</h1>
+    <p class="hero-sub">An interactive analysis of pardons, commutations, and reprieves granted under Governor Gavin Newsom — exploring trends, disparities, and policy impacts across six years of criminal justice reform.</p>
+    <div class="hero-stats">
+      <div class="hero-stat-item">
+        <div class="hero-stat-value" id="counter-pardons">0</div>
+        <div class="hero-stat-label">Pardons Granted</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-value" id="counter-commutations">0</div>
+        <div class="hero-stat-label">Commutations Granted</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-value" id="counter-reprieves">0</div>
+        <div class="hero-stat-label">Reprieves (non-death row)</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════ STICKY NAV ════════════════ -->
+<nav class="nav" role="navigation" aria-label="Section navigation">
+  <div class="container">
+    <a href="#trends"       class="nav-link">1 · Trends</a>
+    <a href="#demographics" class="nav-link">2 · Demographics</a>
+    <a href="#policy"       class="nav-link">3 · Policy Impact</a>
+    <a href="#offenses"     class="nav-link">4 · Offense Types</a>
+    <a href="#geography"    class="nav-link">5 · Geography</a>
+    <a href="#qualitative"  class="nav-link">6 · Predictors</a>
+    <a href="#recidivism"   class="nav-link">7 · Recidivism</a>
+    <a href="#comparative"  class="nav-link">8 · Comparative</a>
+    <a href="#cases"        class="nav-link">9 · Cases</a>
+    <a href="#community"    class="nav-link">10 · Community</a>
+  </div>
+</nav>
+
+<!-- ════════════════ SECTION 1 — TRENDS ════════════════ -->
+<section id="trends">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 01</div>
+      <h2 class="section-title">Trends &amp; Patterns in Clemency Grants</h2>
+      <p class="section-question">How have annual pardons and commutations evolved from 2019 to 2026? Are there discernible trends?</p>
+    </div>
+    <div class="grid-2" style="gap:28px;">
+      <div class="card chart-tall">
+        <div class="card-title">Annual Grants by Type (2019–2026)</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-annual-grants" aria-label="Annual grants bar chart"></canvas>
+        </div>
+      </div>
+      <div class="card chart-tall">
+        <div class="card-title">Cumulative Totals Over Time</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-cumulative" aria-label="Cumulative totals line chart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="section-answer">
+      <strong>Finding:</strong> Clemency activity peaked in 2020 (42 pardons, 59 commutations) and again in 2022 and 2024, closely tracking policy milestones. A sharp drop in 2023 (just 4 pardons) reflects administrative transition and tightened BPH referral pipelines. By February 2026, cumulative totals reached <strong>271 pardons</strong> and <strong>166 commutations</strong>, representing the most active clemency record of any California governor in the modern era.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 2 — DEMOGRAPHICS ════════════════ -->
+<section id="demographics">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 02</div>
+      <h2 class="section-title">Demographic Disparities</h2>
+      <p class="section-question">Are there racial, gender, or age disparities in clemency grant rates?</p>
+    </div>
+    <div class="grid-4 mb-24">
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-value">90%</div>
+        <div class="kpi-label">Male Applicants</div>
+        <div class="kpi-note">Mirrors prison population gender composition</div>
+      </div>
+      <div class="kpi-card kpi-green">
+        <div class="kpi-value">45 yrs</div>
+        <div class="kpi-label">Median Age at Application</div>
+        <div class="kpi-note">Recipients tend to be older (longer sentences served)</div>
+      </div>
+      <div class="kpi-card kpi-amber">
+        <div class="kpi-value">18 yrs</div>
+        <div class="kpi-label">Avg. Sentence Served (Commutations)</div>
+        <div class="kpi-note">Range: 5 to 40+ years</div>
+      </div>
+      <div class="kpi-card kpi-purple">
+        <div class="kpi-value">25%</div>
+        <div class="kpi-label">Black Applicant Share</div>
+        <div class="kpi-note">vs. ~6% of CA general population</div>
+      </div>
+    </div>
+    <div class="grid-3" style="gap:24px;">
+      <div class="card chart-short">
+        <div class="card-title">Applicants by Gender</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-gender" aria-label="Gender distribution doughnut"></canvas>
+        </div>
+      </div>
+      <div class="card chart-short">
+        <div class="card-title">Applicants by Race / Ethnicity</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-race" aria-label="Race distribution doughnut"></canvas>
+        </div>
+      </div>
+      <div class="card chart-short">
+        <div class="card-title">Age Brackets: Applicants vs. Recipients</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-age" aria-label="Age bracket comparison bar chart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="section-answer">
+      <strong>Finding:</strong> Black Californians represent ~25% of clemency applicants — roughly four times their share of the general population — reflecting deep structural inequities in the criminal justice system. Older applicants (55–64) are overrepresented among recipients relative to their share of applications, likely because commutations favor those who have served the longest sentences and demonstrated sustained rehabilitation.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 3 — POLICY ════════════════ -->
+<section id="policy">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 03</div>
+      <h2 class="section-title">Policy Impact on Clemency Trends</h2>
+      <p class="section-question">Did the 2019 execution moratorium, resentencing laws, and San Quentin reforms reshape who receives clemency?</p>
+    </div>
+    <div class="card chart-wide" style="margin-bottom:32px;">
+      <div class="card-title">Annual Grants with Policy Events Overlaid</div>
+      <div class="chart-wrapper">
+        <canvas id="chart-policy" aria-label="Policy impact annotated line chart"></canvas>
+      </div>
+    </div>
+    <div class="grid-2" style="gap:32px;">
+      <div>
+        <div class="policy-timeline" id="policy-timeline-list"></div>
+      </div>
+      <div class="section-answer" style="margin-top:0; align-self: flex-start;">
+        <strong>Finding:</strong> Three legislative moments drove the largest shifts: the <strong>2019 death penalty moratorium</strong> instantly converted 737 death row cases into reprieves; <strong>SB 483 (2022)</strong> created a pipeline of resentencing referrals that pushed commutation counts upward; and the <strong>2024 San Quentin reforms</strong> coincided with 35 additional reprieves and Newsom's largest single-year pardon batch (56). Policy architecture, not individual gubernatorial discretion, explains most of the year-over-year variance.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 4 — OFFENSES ════════════════ -->
+<section id="offenses">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 04</div>
+      <h2 class="section-title">Offense-Specific Patterns</h2>
+      <p class="section-question">Which offense categories have the highest clemency grant rates, and why?</p>
+    </div>
+    <div class="grid-3" style="gap:24px; margin-bottom:28px;">
+      <div class="card chart-short">
+        <div class="card-title">All Applications</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-offense-apps" aria-label="Offense type — all applications"></canvas>
+        </div>
+      </div>
+      <div class="card chart-short">
+        <div class="card-title">Pardons Granted</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-offense-pardons" aria-label="Offense type — pardons granted"></canvas>
+        </div>
+      </div>
+      <div class="card chart-short">
+        <div class="card-title">Commutations Granted</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-offense-commutations" aria-label="Offense type — commutations granted"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="section-answer">
+      <strong>Finding:</strong> Pardons strongly favor non-violent offenses (55%) and misdemeanors (30%), reflecting their rehabilitative and deportation-relief purposes. Commutations tell the opposite story — <strong>65% go to violent felony convictions</strong>, because commutations exist precisely to reduce excessive sentences, most commonly life sentences imposed on those convicted of the gravest crimes. Misdemeanors account for only 5% of commutations as those sentences are already short.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 5 — GEOGRAPHY ════════════════ -->
+<section id="geography">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 05</div>
+      <h2 class="section-title">Geographic Distribution</h2>
+      <p class="section-question">How do clemency applications and grant rates vary across California counties?</p>
+    </div>
+    <div class="grid-2" style="gap:24px; margin-bottom:28px; align-items:start;">
+      <div class="map-container">
+        <svg id="map-svg" aria-label="California county clemency choropleth map"></svg>
+        <div class="map-tooltip" id="map-tooltip"></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Top Counties by Total Grants</div>
+          <canvas id="chart-counties" style="max-height:340px;" aria-label="Top counties bar chart"></canvas>
+        </div>
+        <div class="estimate-note">County figures are estimates extrapolated from application-volume patterns in annual reports. Exact county-level data is not systematically published.</div>
+      </div>
+    </div>
+    <div class="section-answer">
+      <strong>Finding:</strong> Los Angeles County dominates by volume (≈380 applications), reflecting its share of California's overall prison population. However, <strong>rural counties show 2–3× higher per-capita grant rates</strong>: Kings County (~30% grant rate) and Trinity County (~50%) have small application pools that likely receive more individualized attention. Urban county applications may face longer queues and more administrative scrutiny.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 6 — QUALITATIVE ════════════════ -->
+<section id="qualitative">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 06</div>
+      <h2 class="section-title">Qualitative Predictors of Clemency</h2>
+      <p class="section-question">What are the strongest factors predicting clemency grants versus denials?</p>
+    </div>
+    <div class="grid-2" style="gap:24px; margin-bottom:28px;">
+      <div class="card chart-tall">
+        <div class="card-title">Reasons for Granting Clemency (% of cases)</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-reasons-grant" aria-label="Reasons for granting clemency"></canvas>
+        </div>
+      </div>
+      <div class="card chart-tall">
+        <div class="card-title">Reasons for Denial (% of cases)</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-reasons-deny" aria-label="Reasons for denying clemency"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="section-answer">
+      <strong>Finding:</strong> <strong>Possible innocence is the single strongest predictor</strong> — present in 33% of granted cases. Mitigation factors (circumstances of the offense, youth at time of crime) and evidence of rehabilitation follow. Denial decisions are overwhelmingly driven by perceived insufficient rehabilitation evidence (40%), suggesting the system is sensitive to demonstrated behavioral change but skeptical of applications that arrive without a compelling transformation narrative.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 7 — RECIDIVISM ════════════════ -->
+<section id="recidivism">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 07</div>
+      <h2 class="section-title">Recidivism &amp; Outcomes</h2>
+      <p class="section-question">What are recidivism rates among clemency recipients compared to the general parolee population?</p>
+    </div>
+    <div class="grid-2" style="gap:24px; margin-bottom:28px; align-items:center;">
+      <div class="card chart-tall">
+        <div class="card-title">3-Year &amp; 5-Year Recidivism Rate Comparison *</div>
+        <div class="chart-wrapper">
+          <canvas id="chart-recidivism" aria-label="Recidivism comparison bar chart"></canvas>
+        </div>
+        <div class="estimate-note">* Estimates based on Governor's Office claims and CDCR research; exact longitudinal data not publicly released.</div>
+      </div>
+      <div>
+        <div class="grid-2" style="gap:16px; margin-bottom:16px;">
+          <div class="kpi-card kpi-green">
+            <div class="kpi-value">~8%</div>
+            <div class="kpi-label">Clemency Recipients (3-yr recidivism)</div>
+          </div>
+          <div class="kpi-card" style="border-color:#FCA5A5;">
+            <div class="kpi-value" style="color:#DC2626;">~45%</div>
+            <div class="kpi-label">General Parolees (3-yr recidivism)</div>
+          </div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div class="card-title">Why the gap is so large</div>
+          <p style="font-size:14px; color:var(--text-secondary); line-height:1.7;">The BPH vetting process for clemency recommendations is exhaustive — applicants must demonstrate years of institutional programming, educational achievement, and community support. This selection effect means clemency recipients are not a random sample of the prison population; they are the best-case outcomes of the rehabilitation system. The low recidivism rate is evidence of effective vetting, not necessarily that clemency itself reduces reoffending.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 8 — COMPARATIVE ════════════════ -->
+<section id="comparative">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 08</div>
+      <h2 class="section-title">Comparative Analysis</h2>
+      <p class="section-question">How does California's clemency record compare to national trends and other states?</p>
+    </div>
+    <div class="card chart-wide" style="margin-bottom:28px;">
+      <div class="card-title">Total Clemency Grants — California vs. Other Jurisdictions</div>
+      <div class="chart-wrapper">
+        <canvas id="chart-comparative" aria-label="State comparison bar chart"></canvas>
+      </div>
+    </div>
+    <div class="section-answer">
+      <strong>Finding:</strong> California's 437 total clemency actions (2019–2026) make it among the most active state clemency programs in the U.S. By contrast, <strong>Ohio</strong> grants pardons exclusively to non-violent offenders after a mandatory 10-year waiting period, and <strong>Connecticut</strong> issued 100 commutations in a single 2022 wave before political backlash halted the program. The Federal comparison is dominated by scale — Obama's 1,927 actions were driven by a deliberate drug-sentencing reform initiative — and by political use: Trump's 2025–2026 pardons were largely directed at political allies rather than rehabilitated offenders.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 9 — NOTABLE CASES ════════════════ -->
+<section id="cases">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 09</div>
+      <h2 class="section-title">Notable Cases</h2>
+      <p class="section-question">What do high-profile or anomalous clemency cases reveal about the process?</p>
+    </div>
+    <div class="card chart-short" style="margin-bottom:28px;">
+      <div class="card-title">Years Between Conviction and Clemency Grant</div>
+      <div class="chart-wrapper">
+        <canvas id="chart-waittime" aria-label="Wait time bar chart for case studies"></canvas>
+      </div>
+    </div>
+    <div class="grid-2" id="case-studies-grid" style="gap:20px; margin-bottom:28px;"></div>
+    <div class="section-answer">
+      <strong>Finding:</strong> The case studies reveal two distinct clemency pathways. The <strong>veterans pathway</strong> (Rodriguez De Leon, Rebolledo) uses pardons surgically to prevent deportation of people who have already served their sentences and reintegrated — the clemency resolves a legal status problem, not an incarceration problem. The <strong>long-sentence pathway</strong> (Thongsy, Perez, Daniels) centers on rehabilitation over decades: applicants wait an average of <strong>22 years</strong> between conviction and clemency, having rebuilt their lives within the prison system before being considered.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SECTION 10 — COMMUNITY ════════════════ -->
+<section id="community">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Research Question 10</div>
+      <h2 class="section-title">Victim &amp; Community Impact</h2>
+      <p class="section-question">How do clemency decisions affect crime victims, survivors, and community perceptions of justice?</p>
+    </div>
+    <div class="grid-4" style="margin-bottom:32px;" id="community-stats-grid"></div>
+    <div class="grid-2" style="gap:24px;">
+      <div class="card">
+        <div class="card-title">Victim Inclusion in the Process</div>
+        <p style="font-size:14px; color:var(--text-secondary); line-height:1.75;">California's Office of Victim and Survivor Rights and Services (OVSRS) notifies registered victims of clemency petitions, giving them the right to submit statements and attend hearings. Victim family support appeared in <strong>15% of granted cases</strong>, while victim family opposition was cited in 10% of denials. The data underscores a nuanced picture: families of crime victims are not monolithic in their views, and some actively advocate for the release of those who harmed them after witnessing genuine transformation.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Broader Justice Reinvestment</div>
+        <p style="font-size:14px; color:var(--text-secondary); line-height:1.75;">Clemency is one pillar of California's broader criminal justice reform ecosystem. The <strong>California Violence Intervention and Prevention (CalVIP)</strong> program has distributed over $107M to 42 communities to reduce community violence. <strong>CARE Court</strong> (2023) added $291M in behavioral health funding for those at the intersection of homelessness, mental illness, and the justice system. Clemency decisions that return individuals to communities are more likely to succeed when these support structures exist — and advocates argue expanded clemency itself builds the community trust infrastructure that prevents crime.</p>
+      </div>
+    </div>
+    <div class="section-answer" style="max-width:100%; margin-top:28px;">
+      <strong>Finding:</strong> The most significant data gap in California's clemency reporting is outcomes tracking. While recidivism estimates exist, there is no systematic public reporting on post-clemency employment, housing stability, or community integration for recipients. Victim experience data is similarly thin. Expanding this tracking infrastructure would provide the evidence base needed to scale clemency as a justice reform tool rather than an exceptional act.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-title">Data Sources</div>
+        <p>California Governor's Office Annual Executive Reports on Clemency (2019–2026). Board of Parole Hearings records. CDCR recidivism research. CalVIP program reports.</p>
+      </div>
+      <div>
+        <div class="footer-title">Methodology Notes</div>
+        <p>Application volumes and demographic percentages are estimates from the analysis layer of the source document; they are not exact counts from raw administrative data. Fields marked with * are estimated. Annual grant counts use the Governor's press releases as primary source.</p>
+      </div>
+      <div>
+        <div class="footer-title">Data Currency</div>
+        <p>Clemency actions tracked through February 2026. This dashboard is a static analysis tool; it does not update automatically. Source: <em>california-clemency-data / claude.md</em>.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════════════ SCRIPTS ════════════════ -->
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<script src="map.js"></script>
+
+</body>
+</html>
